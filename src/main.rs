@@ -1,5 +1,5 @@
 use std::borrow::BorrowMut;
-use std::fs;
+use std::{fs, env};
 
 use serenity::async_trait;
 use serenity::model::channel::Message;
@@ -229,8 +229,9 @@ impl EventHandler for Handler {
 async fn main() {
     let framework = StandardFramework::new();
 
-    // Login with a bot token from the environment
-    let token = fs::read_to_string("token/token.txt").unwrap_or("TOKEN".to_string()).trim().to_string();
+    let args = env::args().collect::<Vec<String>>();
+    let token = args.get(1).unwrap_or(&"--".to_string()).to_owned();
+    
     let intents = GatewayIntents::non_privileged() | GatewayIntents::MESSAGE_CONTENT | GatewayIntents::GUILD_MESSAGES | GatewayIntents::GUILD_MEMBERS | GatewayIntents::GUILDS;
     let mut client = Client::builder(token, intents)
         .event_handler(Handler)
